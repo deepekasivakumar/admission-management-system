@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.env
+*.log
+*.lock
+coverage/
+.vscode/
+
+# NestJS specific
+/backend/node_modules/
+/backend/dist/
+
+# Vite/React specific
+/frontend/node_modules/
+/frontend/dist/
