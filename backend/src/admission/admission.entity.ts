@@ -23,6 +23,6 @@ export class Admission {
   @Column({ default: 'Pending' })
   feeStatus: string; // Pending, Paid
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ default: () => 'CURRENT_TIMESTAMP' })
   admissionDate: Date;
 }

@@ -32,23 +32,15 @@ import { SeedService } from './seed.service';
     MasterModule,
     SeatMatrixModule,
     AdmissionModule,
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
-        entities: [
-          User, Institution, Campus, Department, Program,
-          AcademicYear, CourseType, EntryType, AdmissionMode, SeatMatrix,
-          Applicant, Admission
-        ],
-        synchronize: true, // Set to false in production
-      }),
-      inject: [ConfigService],
+    TypeOrmModule.forRoot({
+      type: 'better-sqlite3',
+      database: 'admission.db',
+      entities: [
+        User, Institution, Campus, Department, Program,
+        AcademicYear, CourseType, EntryType, AdmissionMode, SeatMatrix,
+        Applicant, Admission
+      ],
+      synchronize: true,
     }),
   ],
   controllers: [AppController],
