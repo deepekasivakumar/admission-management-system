@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import * as authService from '../services/authService';
-import { User, Lock, ArrowRight, ShieldCheck, Mail, GraduationCap } from 'lucide-react';
+import { User, Lock, ArrowRight, ShieldCheck, Mail, GraduationCap, Eye, EyeOff } from 'lucide-react';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('mail2deepeka@gmail.com');
@@ -10,6 +10,7 @@ const LoginPage = () => {
   const [activeTab, setActiveTab] = useState('Admin'); // Role display name
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -109,16 +110,41 @@ const LoginPage = () => {
             <label style={{ display: 'block', marginBottom: '0.625rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)', paddingLeft: '0.25rem' }}>
               Password
             </label>
-            <div className="input-container">
+            <div className="input-container" style={{ position: 'relative' }}>
               <input 
                 className="premium-input"
-                type="password" 
+                type={showPassword ? 'text' : 'password'} 
                 placeholder="••••••••"
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
+                style={{ paddingRight: '3rem' }}
               />
               <Lock className="input-icon" size={20} />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px',
+                  borderRadius: '50%',
+                  transition: 'color 0.2s'
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.color = 'var(--primary)')}
+                onMouseOut={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
 
