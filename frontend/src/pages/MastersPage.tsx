@@ -17,7 +17,15 @@ const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
+  const getEndpoint = () => {
+    const lower = type.toLowerCase();
+    if (lower === 'institution') return 'institutions';
+    if (lower === 'campus') return 'campuses';
+    return lower + 's';
+  };
+
   useEffect(() => {
+    setData([]);
     fetchData();
     fetchParents();
     setFormData({});
@@ -25,20 +33,29 @@ const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
   }, [type]);
 
   const fetchData = async () => {
-    const endpoint = type.toLowerCase() === 'institution' ? 'institutions' : type.toLowerCase() + 's';
-    const res = await api.get(`/master/${endpoint}`);
-    setData(res.data);
+    try {
+      const res = await api.get(`/master/${getEndpoint()}`);
+      setData(res.data);
+    } catch (error) {
+      console.error('Error fetching master data:', error);
+      setData([]);
+    }
   };
 
   const fetchParents = async () => {
-    let endpoint = '';
-    if (type === 'Campus') endpoint = 'institutions';
-    else if (type === 'Department') endpoint = 'campuses';
-    else if (type === 'Program') endpoint = 'departments';
+    let parentEndpoint = '';
+    if (type === 'Campus') parentEndpoint = 'institutions';
+    else if (type === 'Department') parentEndpoint = 'campuses';
+    else if (type === 'Program') parentEndpoint = 'departments';
 
-    if (endpoint) {
-      const res = await api.get(`/master/${endpoint}`);
-      setParents(res.data);
+    if (parentEndpoint) {
+      try {
+        const res = await api.get(`/master/${parentEndpoint}`);
+        setParents(res.data);
+      } catch (error) {
+        console.error('Error fetching parent data:', error);
+        setParents([]);
+      }
     } else {
       setParents([]);
     }
@@ -48,7 +65,7 @@ const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const endpoint = type.toLowerCase() === 'institution' ? 'institutions' : type.toLowerCase() + 's';
+      const endpoint = getEndpoint();
       if (selectedId) {
         await api.put(`/master/${endpoint}/${selectedId}`, formData);
       } else {
@@ -99,7 +116,7 @@ const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
               />
             </div>
 
-            {(type === 'Institution' || type === 'Campus' || type === 'Department') && (
+            {(type === 'Institution' || type === 'Campus' || type === 'Department' || type === 'Program') && (
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>
                   Code *
