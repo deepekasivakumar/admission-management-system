@@ -90,7 +90,7 @@ const ApplicantsPage = () => {
 
   const handleVerify = async (id: number) => {
     try {
-      await api.patch(`/admission/verify/${id}`, { status: 'Verified' });
+      await api.patch(`/admission/applicant/${id}/status`, { status: 'Verified' });
       fetchApplicants();
     } catch (err) {
       console.error('Error verifying applicant:', err);

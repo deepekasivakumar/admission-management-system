@@ -68,13 +68,17 @@ export class AdmissionService {
   }
 
   async updateFeeStatus(admissionId: number, status: string) {
-    await this.admissionRepo.update(admissionId, { feeStatus: status });
-    return this.admissionRepo.findOne({ where: { id: admissionId } });
+    const admission = await this.admissionRepo.findOne({ where: { id: admissionId } });
+    if (!admission) throw new BadRequestException('Admission not found');
+    admission.feeStatus = status;
+    return this.admissionRepo.save(admission);
   }
 
   async updateDocumentStatus(applicantId: number, status: string) {
-    await this.applicantRepo.update(applicantId, { documentStatus: status });
-    return this.applicantRepo.findOne({ where: { id: applicantId } });
+    const applicant = await this.applicantRepo.findOne({ where: { id: applicantId } });
+    if (!applicant) throw new BadRequestException('Applicant not found');
+    applicant.documentStatus = status;
+    return this.applicantRepo.save(applicant);
   }
 
   async getDashboard() {
