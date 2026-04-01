@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Edit, CheckCircle } from 'lucide-react';
 import api from '../services/api';
+import Drawer from '../components/Drawer';
 
 type MasterType = 'Institution' | 'Campus' | 'Department' | 'Program';
 
@@ -9,13 +10,13 @@ interface MastersPageProps {
 }
 
 const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
-  console.log('MastersPage Rendering for type:', type);
   const [data, setData] = useState<any[]>([]);
   const [formData, setFormData] = useState<any>({});
   const [parents, setParents] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const getEndpoint = () => {
     const lower = type.toLowerCase();
@@ -24,8 +25,14 @@ const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
     return lower + 's';
   };
 
+  const getPluralTitle = () => {
+    if (type === 'Campus') return 'Campuses';
+    return `${type}s`;
+  };
+
   useEffect(() => {
     setData([]);
+    setIsDrawerOpen(false);
     fetchData();
     fetchParents();
     setFormData({});
@@ -73,9 +80,11 @@ const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
       }
       setFormData({});
       setSelectedId(null);
+      setIsDrawerOpen(false);
       fetchData();
     } catch (error) {
       console.error('Error saving master:', error);
+      alert('Error saving data. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -88,157 +97,140 @@ const MastersPage: React.FC<MastersPageProps> = ({ type }) => {
     if (item.campus) updatedForm.campus = { id: item.campus.id };
     if (item.department) updatedForm.department = { id: item.department.id };
     setFormData(updatedForm);
+    setIsDrawerOpen(true);
+  };
+
+  const getParentName = (item: any) => {
+    if (type === 'Campus') return item.institution?.name || 'N/A';
+    if (type === 'Department') return item.campus?.name || 'N/A';
+    if (type === 'Program') return item.department?.name || 'N/A';
+    return '';
   };
 
   return (
-    <div className="master-container">
-      {/* Masters Sidebar Panel: Form + List */}
-      <div className="master-sidebar-panel">
-        <div className="panel-header">
-          <h2 style={{ fontSize: '1.125rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {selectedId ? 'Edit' : 'Add'} {type}
-          </h2>
+    <div style={{ width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+        <div>
+          <h1 style={{ margin: 0 }}>{getPluralTitle()}</h1>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Manage your organizational hierarchy and master data</p>
         </div>
-        
-        {/* Fill Form Section */}
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)' }}>
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>
-                {type} Name *
-              </label>
-              <input 
-                placeholder={`Enter ${type.toLowerCase()} name`} 
-                value={formData.name || ''} 
-                onChange={e => setFormData({...formData, name: e.target.value})} 
-                required 
-                style={{ fontSize: '0.875rem' }}
-              />
-            </div>
-
-            {(type === 'Institution' || type === 'Campus' || type === 'Department' || type === 'Program') && (
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>
-                  Code *
-                </label>
-                <input 
-                  placeholder={`Enter ${type.toLowerCase()} code`} 
-                  value={formData.code || ''} 
-                  onChange={e => setFormData({...formData, code: e.target.value})} 
-                  required 
-                  style={{ fontSize: '0.875rem' }}
-                />
-              </div>
-            )}
-
-            {type !== 'Institution' && (
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-muted)' }}>
-                  Parent {type === 'Campus' ? 'Institution' : type === 'Department' ? 'Campus' : 'Department'} *
-                </label>
-                <select 
-                  value={formData[type === 'Campus' ? 'institution' : type === 'Department' ? 'campus' : 'department']?.id || ''}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    [type === 'Campus' ? 'institution' : type === 'Department' ? 'campus' : 'department']: { id: parseInt(e.target.value) }
-                  })}
-                  required
-                  style={{ fontSize: '0.875rem' }}
-                >
-                  <option value="">Select Parent</option>
-                  {parents.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                </select>
-              </div>
-            )}
-
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              {selectedId && (
-                <button 
-                  type="button" 
-                  onClick={() => { setSelectedId(null); setFormData({}); }} 
-                  className="btn" 
-                  style={{ flex: 1, backgroundColor: 'transparent', border: '1px solid var(--border)', fontSize: '0.875rem' }}
-                >
-                  Cancel
-                </button>
-              )}
-              <button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="btn btn-primary" 
-                style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontSize: '0.875rem' }}
-              >
-                {isSubmitting ? 'Saving...' : (selectedId ? 'Update' : 'Save')} {type}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* Mini List Section */}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          <div className="panel-header" style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: 'var(--bg-card)', padding: '0.75rem 1.25rem' }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input 
-                placeholder="Quick search..." 
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                style={{ paddingLeft: '2.25rem', height: '32px', fontSize: '0.75rem', borderRadius: '6px' }}
-              />
-            </div>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ position: 'relative' }}>
+            <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <input 
+              placeholder={`Search ${getPluralTitle().toLowerCase()}...`} 
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ paddingLeft: '2.75rem', height: '45px', width: '350px', borderRadius: '12px' }}
+            />
           </div>
-          
-          <table className="mini-table">
-            <thead>
-              <tr>
-                <th>{type}</th>
-                <th style={{ width: '60px', textAlign: 'center' }}>Action</th>
+          <button 
+            onClick={() => { setFormData({}); setSelectedId(null); setIsDrawerOpen(true); }} 
+            className="btn btn-primary"
+            style={{ padding: '0.75rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <CheckCircle size={20} /> Add New {type}
+          </button>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <table className="mini-table" style={{ width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ padding: '1.25rem', width: '15%' }}>Code</th>
+              <th style={{ padding: '1.25rem', width: '45%' }}>{type} Name</th>
+              {type !== 'Institution' && <th style={{ padding: '1.25rem', width: '25%' }}>Parent</th>}
+              <th style={{ padding: '1.25rem', textAlign: 'center', width: '15%' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.filter(item => (item.name || '').toLowerCase().includes(searchTerm.toLowerCase())).map((item) => (
+              <tr key={item.id}>
+                <td style={{ padding: '1.25rem', fontWeight: 600, color: 'var(--primary)' }}>{item.code}</td>
+                <td style={{ padding: '1.25rem' }}>{item.name}</td>
+                {type !== 'Institution' && (
+                  <td style={{ padding: '1.25rem', color: 'var(--text-muted)' }}>{getParentName(item)}</td>
+                )}
+                <td style={{ padding: '1.25rem', textAlign: 'center' }}>
+                  <button 
+                    onClick={() => handleEdit(item)}
+                    className="btn"
+                    style={{ background: '#f1f5f9', color: 'var(--primary)', padding: '0.5rem' }}
+                  >
+                    <Edit size={18} />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {data.filter(item => (item.name || '').toLowerCase().includes(searchTerm.toLowerCase())).map((item) => (
-                <tr key={item.id} style={selectedId === item.id ? { backgroundColor: 'rgba(99, 102, 241, 0.1)' } : {}}>
-                  <td style={{ fontWeight: 500 }}>
-                    {item.name}
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{item.code}</div>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <button 
-                      onClick={() => handleEdit(item)}
-                      style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--primary)', padding: '4px' }}
-                    >
-                      <Edit size={14} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {data.length === 0 && (
-                <tr>
-                  <td colSpan={2} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                    No records found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+            {data.length === 0 && (
+              <tr>
+                <td colSpan={type === 'Institution' ? 3 : 4} style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-muted)' }}>
+                  <div style={{ opacity: 0.5 }}>
+                    <Search size={48} style={{ marginBottom: '1rem' }} />
+                    <p>No {type.toLowerCase()} records found yet.</p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Main Content Panel: Preview / Details */}
-      <div className="master-content-panel">
-        <div className="panel-header">
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 600 }}>{type} Overview</h1>
-        </div>
-        <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.5 }}>
-          <div style={{ textAlign: 'center' }}>
-            <CheckCircle size={64} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
-            <h3 style={{ marginBottom: '0.5rem' }}>Manager View</h3>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '300px' }}>
-              Select a {type.toLowerCase()} from the side menu to view details or perform actions.
-            </p>
+      <Drawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+        title={`${selectedId ? 'Edit' : 'Add New'} ${type}`}
+        footer={
+          <>
+            <button className="btn" onClick={() => setIsDrawerOpen(false)} style={{ background: '#f1f5f9' }}>Cancel</button>
+            <button className="btn btn-primary" onClick={(e) => handleSubmit(e as any)} disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </>
+        }
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="input-group" style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>{type} Name *</label>
+            <input 
+              placeholder={`Enter ${type.toLowerCase()} name`} 
+              value={formData.name || ''} 
+              onChange={e => setFormData({...formData, name: e.target.value})} 
+              required 
+            />
           </div>
-        </div>
-      </div>
+
+          <div className="input-group" style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Code / Identifier *</label>
+            <input 
+              placeholder={`Enter ${type.toLowerCase()} code`} 
+              value={formData.code || ''} 
+              onChange={e => setFormData({...formData, code: e.target.value})} 
+              required 
+            />
+          </div>
+
+          {type !== 'Institution' && (
+            <div className="input-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                Parent {type === 'Campus' ? 'Institution' : type === 'Department' ? 'Campus' : 'Department'} *
+              </label>
+              <select 
+                value={formData[type === 'Campus' ? 'institution' : type === 'Department' ? 'campus' : 'department']?.id || ''}
+                onChange={e => setFormData({
+                  ...formData, 
+                  [type === 'Campus' ? 'institution' : type === 'Department' ? 'campus' : 'department']: { id: parseInt(e.target.value) }
+                })}
+                required
+              >
+                <option value="">-- Select Parent --</option>
+                {parents.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+          )}
+        </form>
+      </Drawer>
     </div>
   );
 };

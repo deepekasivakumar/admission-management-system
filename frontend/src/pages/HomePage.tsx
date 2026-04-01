@@ -14,12 +14,12 @@ const HomePage = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <div className="card" style={{ 
-        background: 'linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%)',
+        background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
         padding: '3rem',
         textAlign: 'center',
         borderRadius: '24px',
         border: '1px solid var(--border)',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+        boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
       }}>
         <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: 700 }}>
           {getGreeting()}, <span style={{ color: 'var(--primary)' }}>{user?.username || 'User'}</span>

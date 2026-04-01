@@ -7,19 +7,19 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">Admission CRM</div>
-      
-      <nav className="nav-menu">
+      <div className="sidebar-logo" style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.5rem' }}>Admission CRM</div>
+
+      <nav className="nav-menu" style={{ flex: 1 }}>
         <NavLink to="/" className="nav-link">
           <BookOpen size={20} /> Home
         </NavLink>
-        
+
         {user?.role === 'MANAGEMENT' && (
           <NavLink to="/dashboard" className="nav-link">
             <LayoutDashboard size={20} /> Dashboard
           </NavLink>
         )}
-        
+
         {user?.role === 'ADMIN' && (
           <>
             <div className="nav-header">Setup Masters</div>
@@ -54,9 +54,20 @@ const Sidebar = () => {
           </>
         )}
       </nav>
-      
-      <div style={{ marginTop: 'auto', padding: '1rem' }}>
-        <button onClick={logout} className="nav-link" style={{ border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}>
+
+      <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+        <button 
+          onClick={logout} 
+          className="nav-link" 
+          style={{ 
+            width: '100%', 
+            cursor: 'pointer',
+            border: 'none',
+            background: 'transparent',
+            textAlign: 'left',
+            marginBottom: 0
+          }}
+        >
           <LogOut size={20} /> Logout
         </button>
       </div>

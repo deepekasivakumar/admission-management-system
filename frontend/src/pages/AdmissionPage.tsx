@@ -99,7 +99,7 @@ const AdmissionPage = () => {
   const remainingSeats = getRemainingSeats(selectedAppContext?.appliedProgram?.id, selectedAppContext?.quotaType);
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <h1 style={{ marginBottom: '2rem' }}>Admission Allocation & Confirmation</h1>
       
       <div className="card" style={{ marginBottom: '2rem' }}>
@@ -139,11 +139,11 @@ const AdmissionPage = () => {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Applicant</th>
-              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Program</th>
-              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Fee Status</th>
-              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Adm. Number</th>
-              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Actions</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'left', width: '25%', backgroundColor: '#f8fafc' }}>Applicant</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'left', width: '25%', backgroundColor: '#f8fafc' }}>Program</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'left', width: '15%', backgroundColor: '#f8fafc' }}>Fee Status</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'left', width: '20%', backgroundColor: '#f8fafc' }}>Adm. Number</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'center', width: '15%', backgroundColor: '#f8fafc' }}>Actions</th>
             </tr>
           </thead>
           <tbody>

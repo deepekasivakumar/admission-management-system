@@ -10,6 +10,9 @@ export class Department {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  code: string;
+
   @ManyToOne(() => Campus, (campus) => campus.departments)
   campus: Campus;
 
