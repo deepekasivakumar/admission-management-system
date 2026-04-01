@@ -38,6 +38,12 @@ export class AdmissionController {
     return this.admissionService.updateFeeStatus(id, status); 
   }
 
+  @Roles(Role.ADMISSION_OFFICER, Role.ADMIN)
+  @Patch('applicant/:id/status')
+  updateApplicantStatus(@Param('id') id: number, @Body('status') status: string) { 
+    return this.admissionService.updateDocumentStatus(id, status); 
+  }
+
   @Roles(Role.ADMIN, Role.ADMISSION_OFFICER, Role.MANAGEMENT)
   @Get('dashboard')
   getDashboard() { return this.admissionService.getDashboard(); }

@@ -93,7 +93,8 @@ const ApplicantsPage = () => {
               <th style={{ padding: '0.5rem', textAlign: 'left' }}>Name</th>
               <th style={{ padding: '0.5rem', textAlign: 'left' }}>Quota</th>
               <th style={{ padding: '0.5rem', textAlign: 'left' }}>Program</th>
-              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Status</th>
+              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Doc Status</th>
+              <th style={{ padding: '0.5rem', textAlign: 'left' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -102,7 +103,31 @@ const ApplicantsPage = () => {
                 <td style={{ padding: '0.5rem' }}>{app.firstName} {app.lastName}</td>
                 <td style={{ padding: '0.5rem' }}>{app.quotaType}</td>
                 <td style={{ padding: '0.5rem' }}>{app.appliedProgram?.name}</td>
-                <td style={{ padding: '0.5rem' }}>{app.documentStatus}</td>
+                <td style={{ padding: '0.5rem' }}>
+                  <span style={{ 
+                    padding: '0.25rem 0.5rem', 
+                    borderRadius: '4px', 
+                    fontSize: '0.75rem',
+                    backgroundColor: app.documentStatus === 'Verified' ? 'var(--success-bg)' : 'var(--warning-bg)',
+                    color: app.documentStatus === 'Verified' ? 'var(--success)' : 'var(--warning)'
+                  }}>
+                    {app.documentStatus}
+                  </span>
+                </td>
+                <td style={{ padding: '0.5rem' }}>
+                  {app.documentStatus !== 'Verified' && (
+                    <button 
+                      onClick={async () => {
+                        await api.patch(`/admission/applicant/${app.id}/status`, { status: 'Verified' });
+                        fetchApplicants();
+                      }}
+                      className="btn btn-primary"
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                    >
+                      Verify
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

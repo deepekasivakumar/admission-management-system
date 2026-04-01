@@ -1,20 +1,28 @@
 import { createContext, useContext, useState } from 'react';
 
+export type UserRole = 'ADMIN' | 'ADMISSION_OFFICER' | 'MANAGEMENT';
+
+interface User {
+  id: number;
+  username: string;
+  role: UserRole;
+}
+
 interface AuthContextType {
-  user: any;
-  login: (userData: any, token: string) => void;
+  user: User | null;
+  login: (userData: User, token: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(() => {
+  const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const login = (userData: any, token: string) => {
+  const login = (userData: User, token: string) => {
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', token);
     setUser(userData);

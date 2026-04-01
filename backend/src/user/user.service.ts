@@ -26,4 +26,9 @@ export class UserService {
     });
     return this.userRepository.save(newUser);
   }
+
+  async createPlain(user: Partial<User>): Promise<User> {
+    const newUser = this.userRepository.create(user);
+    return this.userRepository.save(newUser);
+  }
 }

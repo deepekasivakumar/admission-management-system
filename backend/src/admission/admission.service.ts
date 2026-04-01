@@ -51,6 +51,7 @@ export class AdmissionService {
       relations: ['applicant', 'seatMatrix', 'seatMatrix.program', 'seatMatrix.program.department'] 
     });
     if (!admission) throw new BadRequestException('Admission record not found');
+    if (admission.applicant.documentStatus !== 'Verified') throw new BadRequestException('Documents must be verified before confirmation');
     if (admission.feeStatus !== 'Paid') throw new BadRequestException('Fee must be paid before confirmation');
     if (admission.admissionNumber) throw new BadRequestException('Admission already confirmed');
 
@@ -69,6 +70,11 @@ export class AdmissionService {
   async updateFeeStatus(admissionId: number, status: string) {
     await this.admissionRepo.update(admissionId, { feeStatus: status });
     return this.admissionRepo.findOne({ where: { id: admissionId } });
+  }
+
+  async updateDocumentStatus(applicantId: number, status: string) {
+    await this.applicantRepo.update(applicantId, { documentStatus: status });
+    return this.applicantRepo.findOne({ where: { id: applicantId } });
   }
 
   async getDashboard() {

@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --primary: #6366f1;
   --primary-hover: #4f46e5;
@@ -95,4 +97,216 @@ input, select {
 
 input:focus {
   border-color: var(--primary);
+}
+
+/* Master Sidebar Layout */
+.master-container {
+  display: flex;
+  gap: 1.5rem;
+  height: calc(100vh - 4rem);
+}
+
+.master-sidebar-panel {
+  width: 400px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.master-content-panel {
+  flex: 1;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.mini-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.mini-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.mini-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+/* Login Page Premium Styles */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(rgba(10, 15, 30, 0.7), rgba(10, 15, 30, 0.7)), url('/login_bg.png');
+  background-size: cover;
+  background-position: center;
+  padding: 1.5rem;
+}
+
+.glass-card {
+  background: rgba(20, 25, 45, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+  padding: 3rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: cardAppear 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes cardAppear {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, #818cf8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.04em;
+}
+
+.role-tab-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.role-tab-btn {
+  flex: 1;
+  padding: 0.875rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.role-tab-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.input-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  transition: all 0.3s;
+  pointer-events: none;
+}
+
+.input-group:focus-within .input-icon {
+  color: var(--primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.premium-input {
+  padding-left: 3.25rem !important;
+  height: 3.75rem;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.premium-input:focus {
+  border-color: var(--primary) !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+}
+
+.btn-login {
+  width: 100%;
+  height: 3.75rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+  background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+  border: none !important;
+  border-radius: 14px !important;
+  margin-top: 1.5rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.btn-login:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px -5px rgba(99, 102, 241, 0.5);
+  filter: brightness(1.1);
+}
+
+.btn-login:active {
+  transform: translateY(-1px);
 }

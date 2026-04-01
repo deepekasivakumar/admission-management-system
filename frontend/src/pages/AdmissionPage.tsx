@@ -6,6 +6,7 @@ interface Applicant {
   firstName: string;
   lastName: string;
   quotaType: string;
+  documentStatus: string;
   appliedProgram?: {
     id: number;
     name: string;
@@ -30,12 +31,14 @@ interface Admission {
 const AdmissionPage = () => {
   const [admissions, setAdmissions] = useState<Admission[]>([]);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [seatMatrix, setSeatMatrix] = useState<any[]>([]);
   const [selectedApplicant, setSelectedApplicant] = useState('');
   const [allotmentNo, setAllotmentNo] = useState('');
 
   useEffect(() => {
     fetchAdmissions();
     fetchApplicants();
+    fetchSeatMatrix();
   }, []);
 
   const fetchAdmissions = async () => {
@@ -48,18 +51,34 @@ const AdmissionPage = () => {
     setApplicants(res.data);
   };
 
+  const fetchSeatMatrix = async () => {
+    const res = await api.get('/seat-matrix');
+    setSeatMatrix(res.data);
+  };
+
+  const getRemainingSeats = (programId?: number, quotaType?: string) => {
+    if (!programId || !quotaType) return null;
+    const matrix = seatMatrix.find(m => m.program?.id === programId && m.quotaType === quotaType);
+    return matrix ? matrix.intake - (matrix.admitted + matrix.locked) : 0;
+  };
+
   const handleAllocate = async (e: React.FormEvent) => {
     e.preventDefault();
     const applicant = applicants.find(a => a.id === parseInt(selectedApplicant));
     if (!applicant) return;
 
-    await api.post('/admission/allocate', {
-      applicantId: applicant.id,
-      programId: applicant.appliedProgram?.id,
-      quotaType: applicant.quotaType,
-      allotmentNumber: allotmentNo
-    });
-    fetchAdmissions();
+    try {
+      await api.post('/admission/allocate', {
+        applicantId: applicant.id,
+        programId: applicant.appliedProgram?.id,
+        quotaType: applicant.quotaType,
+        allotmentNumber: allotmentNo
+      });
+      fetchAdmissions();
+      fetchSeatMatrix();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Error allocating seat');
+    }
   };
 
   const handleConfirm = async (id: number) => {
@@ -76,25 +95,42 @@ const AdmissionPage = () => {
     fetchAdmissions();
   };
 
+  const selectedAppContext = applicants.find(a => a.id === parseInt(selectedApplicant));
+  const remainingSeats = getRemainingSeats(selectedAppContext?.appliedProgram?.id, selectedAppContext?.quotaType);
+
   return (
     <div>
       <h1 style={{ marginBottom: '2rem' }}>Admission Allocation & Confirmation</h1>
       
       <div className="card" style={{ marginBottom: '2rem' }}>
         <h2 style={{ marginBottom: '1rem' }}>New Allocation</h2>
-        <form onSubmit={handleAllocate} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 1fr auto', gap: '1rem', alignItems: 'end' }}>
+        <form onSubmit={handleAllocate} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 1fr 150px auto', gap: '1rem', alignItems: 'end' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Applicant</label>
             <select value={selectedApplicant} onChange={e => setSelectedApplicant(e.target.value)} required>
               <option value="">Select Applicant</option>
-              {applicants.map(a => <option key={a.id} value={a.id}>{a.firstName} {a.lastName} ({a.quotaType})</option>)}
+              {applicants.map(a => <option key={a.id} value={a.id}>{a.firstName} {a.lastName} ({a.quotaType}) - {a.documentStatus}</option>)}
             </select>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem' }}>Allotment Number (Govt.)</label>
             <input value={allotmentNo} onChange={e => setAllotmentNo(e.target.value)} />
           </div>
-          <button type="submit" className="btn btn-primary">Allocate Seat</button>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Availability</label>
+            <div style={{ 
+              padding: '0.625rem', 
+              border: '1px solid var(--border)', 
+              borderRadius: '4px', 
+              backgroundColor: 'var(--bg-secondary)',
+              color: remainingSeats === 0 ? 'var(--error)' : 'var(--success)',
+              fontWeight: 'bold',
+              textAlign: 'center'
+            }}>
+              {remainingSeats !== null ? `${remainingSeats} Seats` : '-'}
+            </div>
+          </div>
+          <button type="submit" className="btn btn-primary" disabled={remainingSeats === 0}>Allocate Seat</button>
         </form>
       </div>
 
