@@ -3,6 +3,7 @@ import { AuthProvider } from './hooks/useAuth';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import MastersPage from './pages/MastersPage';
 import SeatMatrixPage from './pages/SeatMatrixPage';
@@ -16,7 +17,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoute roles={['ADMIN', 'ADMISSION_OFFICER', 'MANAGEMENT']}><Layout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/dashboard" />} />
+            <Route index element={<HomePage />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="institution" element={<ProtectedRoute roles={['ADMIN']}><MastersPage type="Institution" /></ProtectedRoute>} />
             <Route path="campus" element={<ProtectedRoute roles={['ADMIN']}><MastersPage type="Campus" /></ProtectedRoute>} />

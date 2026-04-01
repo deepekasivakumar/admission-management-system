@@ -41,7 +41,7 @@ const LoginPage = () => {
     try {
       const data = await authService.login(username, password);
       login(data.user as any, data.access_token);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError('Invalid credentials. Please try again.');
     } finally {

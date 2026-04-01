@@ -40,10 +40,10 @@ const SeatMatrixPage = () => {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    await api.post('/seat-matrix', { 
-      program: { id: parseInt(selectedProgram) }, 
-      quotaType, 
-      intake: parseInt(intake.toString()) 
+    await api.post('/seat-matrix', {
+      program: { id: parseInt(selectedProgram) },
+      quotaType,
+      intake: parseInt(intake.toString())
     });
     fetchMatrix();
   };
@@ -51,7 +51,7 @@ const SeatMatrixPage = () => {
   return (
     <div>
       <h1 style={{ marginBottom: '2rem' }}>Seat Matrix & Quota</h1>
-      
+
       <div className="card" style={{ marginBottom: '2rem' }}>
         <h2 style={{ marginBottom: '1rem' }}>Configure Quota</h2>
         <form onSubmit={handleCreate} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr) auto', gap: '1rem', alignItems: 'end' }}>
