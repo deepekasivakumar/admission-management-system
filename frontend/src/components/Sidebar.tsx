@@ -56,14 +56,14 @@ const Sidebar = () => {
       </nav>
 
       <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
-        <button 
-          onClick={logout} 
-          className="nav-link" 
-          style={{ 
-            width: '100%', 
+        <button
+          onClick={logout}
+          className="nav-link"
+          style={{
+            width: '100%',
             cursor: 'pointer',
             border: 'none',
-            background: 'transparent',
+            background: 'premium indigo',
             textAlign: 'left',
             marginBottom: 0
           }}
