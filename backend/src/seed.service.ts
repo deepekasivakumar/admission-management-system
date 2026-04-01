@@ -8,18 +8,18 @@ export class SeedService implements OnModuleInit {
   constructor(private userService: UserService) {}
 
   async onModuleInit() {
-    let admin = await this.userService.findOne('mail2deepeka@gmail.com');
+    let admin = await this.userService.findOne('admin@gmail.com');
     if (!admin) {
       console.log('Seeding admin user...');
       admin = new User();
-      admin.username = 'mail2deepeka@gmail.com';
-      admin.password = 'mail@123';
+      admin.username = 'admin@gmail.com';
+      admin.password = 'admin123';
       admin.role = Role.ADMIN;
       await this.userService.createPlain(admin);
       console.log('Admin user created');
     } else {
       console.log('Admin user already exists, ensuring password is correct...');
-      admin.password = 'mail@123';
+      admin.password = 'admin123';
       await this.userService.createPlain(admin);
     }
     
